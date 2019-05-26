@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>ASP.NET</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div>label</div>
+    <div class="row">
+        <input id="fieldCurrencyOne"/>
+        <select id="currencyOne">
+        </select>
+    </div>
+    <div class="row">
+        <input id="fieldCurrencyTwo" />
+        <select id="currencyTwo">
+        </select>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        jQuery.ajax({
+            type: "GET",
+            url: 'https://api.exchangeratesapi.io/latest?base=USD',
+            dataType: "json",
+            cache: false,
+            crossDomain: true,
+            processData: true,
+
+
+            success: function (data) {
+                var rates = data.rates;
+                var base = data.base;
+                var currency = Object.keys(rates);
+                var index = currency.findIndex((curr) => curr === base);
+                console.log(index, base);
+                var menuOne = $('#currencyOne'); // получаем нужный элемент
+                var menuTwo = $('#currencyTwo'); // получаем нужный элемент
+                var fieldOne = $('#fieldCurrencyOne');
+                var fieldTwo = $('#fieldCurrencyTwo');
+                menuOne.empty(); //очищаем элемент
+                menuTwo.empty(); //очищаем элемент
+                for (var i = 0; i < currency.length; i++) {
+                    menuOne.append('<option>' + currency[i] + '</option>'); // добавляем данные в список
+                    menuTwo.append('<option>' + currency[i] + '</option>'); // добавляем данные в список
+                }
+                menuOne.val(base);
+                fieldOne.val(rates[base]);
+                fieldTwo.val(rates[currency[0]]);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    })
+
+    $('#currencyOne').on('change', function () {
+        jQuery.ajax({
+            type: "GET",
+            url: `https://api.exchangeratesapi.io/latest?symbols=${this.value},GBP`,
+            dataType: "json",
+            cache: false,
+            crossDomain: true,
+            processData: true,
+
+
+            success: function (data) {
+                var rates = data.rates;
+                var base = data.base;
+                var currency = Object.keys(rates);
+                var index = currency.findIndex((curr) => curr === base);
+                console.log(index, base);
+                var menuOne = $('#currencyOne'); // получаем нужный элемент
+                var menuTwo = $('#currencyTwo'); // получаем нужный элемент
+                var fieldOne = $('#fieldCurrencyOne');
+                var fieldTwo = $('#fieldCurrencyTwo');
+                
+             
+                fieldOne.val(rates[currency[0]]);
+                fieldTwo.val(rates[currency[1]]);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    });
+</script>
